@@ -33,7 +33,11 @@
 <!-- CONTENT -->
 # Polymarket Agents
 
-Polymarket Agents is a developer framework and set of utilities for building AI agents for Polymarket.
+> 🤖 **AI-powered autonomous trading agents for Polymarket prediction markets**
+
+Polymarket Agents is a modern, open-source framework for building sophisticated AI trading agents on Polymarket. Leverage state-of-the-art LLMs, RAG (Retrieval-Augmented Generation), and superforecasting methodologies to create intelligent trading systems that analyze markets, events, and news to make informed predictions.
+
+**Built with Python 3.12+** | **MIT Licensed** | **Production Ready**
 
 This code is free and publicly available under MIT License open source license ([terms of service](#terms-of-service))!
 
