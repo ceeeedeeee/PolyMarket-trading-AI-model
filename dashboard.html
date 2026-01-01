@@ -3,405 +3,381 @@
   <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>PolyMarket Trading Bot - Command Center</title>
+        <title>PolyMarket Bot - Tactical Display</title>
       <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
-
                 body {
-                              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                              background: linear-gradient(135deg, #0a1628 0%, #0f2847 100%);
-                              color: #fff;
+                              background: #000 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%23001" width="100" height="100"/><path stroke="%23003" d="M0,0 L100,100 M100,0 L0,100" opacity="0.1"/></svg>');
+                              color: #0f0;
+                              font-family: "Courier New", monospace;
                               padding: 20px;
                               min-height: 100vh;
                 }
 
-                .header {
-                              background: rgba(15, 40, 71, 0.9);
-                              border-left: 5px solid #00ff88;
+                .radar-screen {
+                              border: 3px solid #0f0;
+                              background: #001;
+                              box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0,255,0,0.1);
                               padding: 20px;
-                              margin-bottom: 30px;
-                              border-radius: 4px;
+                              margin-bottom: 20px;
+                              position: relative;
                 }
 
-                .header h1 {
-                              color: #00ffff;
-                              font-size: 28px;
-                              margin-bottom: 10px;
-                              text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-                }
-
-                .header p {
-                              color: #00aa88;
+                .screen-title {
+                              color: #0f0;
                               font-size: 14px;
+                              font-weight: bold;
+                              letter-spacing: 3px;
+                              margin-bottom: 15px;
+                              text-transform: uppercase;
+                              text-shadow: 0 0 10px #0f0;
                 }
 
-                .container {
+                .status-bar {
+                              display: grid;
+                              grid-template-columns: repeat(4, 1fr);
+                              gap: 15px;
+                              margin-bottom: 20px;
+                }
+
+                .status-item {
+                              border: 1px solid #0f0;
+                              padding: 10px;
+                              text-align: center;
+                              background: rgba(0,255,0,0.05);
+                }
+
+                .status-label {
+                              font-size: 10px;
+                              color: #0a0;
+                              letter-spacing: 2px;
+                              text-transform: uppercase;
+                }
+
+                .status-value {
+                              font-size: 18px;
+                              color: #0f0;
+                              font-weight: bold;
+                              text-shadow: 0 0 10px #0f0;
+                              margin-top: 5px;
+                }
+
+                .agents-grid {
                               display: grid;
                               grid-template-columns: repeat(2, 1fr);
-                              gap: 20px;
-                              max-width: 1400px;
-                              margin: 0 auto;
+                              gap: 15px;
+                              margin-bottom: 20px;
                 }
 
-                .card {
-                              background: rgba(15, 40, 71, 0.95);
-                              border: 2px solid #00aa66;
-                              border-radius: 4px;
-                              padding: 20px;
-                              box-shadow: 0 0 15px rgba(0, 255, 136, 0.1);
-                }
-
-                .card h2 {
-                              color: #00ffff;
-                              margin-bottom: 15px;
-                              font-size: 18px;
-                              border-bottom: 2px solid #00ff88;
-                              padding-bottom: 10px;
-                              text-shadow: 0 0 8px rgba(0, 255, 255, 0.2);
-                }
-
-                .card-description {
-                              background: rgba(0, 255, 136, 0.05);
-                              border-left: 3px solid #00ff88;
-                              padding: 12px;
-                              margin-bottom: 15px;
-                              font-size: 13px;
-                              color: #b0e0c8;
-                              line-height: 1.5;
-                              border-radius: 2px;
-                }
-
-                .agent {
-                              background: rgba(10, 20, 35, 0.8);
-                              border-left: 4px solid #00ffff;
-                              padding: 12px;
-                              margin-bottom: 10px;
-                              border-radius: 2px;
+                .agent-panel {
+                              border: 2px solid #0f0;
+                              background: #001;
+                              padding: 15px;
+                              box-shadow: 0 0 15px rgba(0,255,0,0.2);
                 }
 
                 .agent-name {
-                              color: #00ffff;
-                              font-weight: bold;
-                              margin-bottom: 5px;
-                              font-size: 14px;
-                }
-
-                .agent-description {
-                              color: #88dd88;
+                              color: #0f0;
                               font-size: 12px;
-                              line-height: 1.4;
+                              font-weight: bold;
+                              text-transform: uppercase;
+                              letter-spacing: 2px;
+                              margin-bottom: 8px;
+                              text-shadow: 0 0 10px #0f0;
                 }
 
                 .agent-status {
-                              color: #00ff88;
+                              color: #0a0;
                               font-size: 11px;
-                              margin-top: 5px;
-                              font-weight: bold;
-                }
-
-                .metric {
-                              display: flex;
-                              justify-content: space-between;
-                              align-items: center;
-                              padding: 10px;
-                              margin: 8px 0;
-                              background: rgba(0, 255, 136, 0.05);
-                              border-radius: 3px;
-                              border-left: 3px solid #00aa66;
-                }
-
-                .metric-label {
-                              color: #00aa88;
-                              font-size: 12px;
-                              font-weight: bold;
-                }
-
-                .metric-value {
-                              color: #00ff88;
-                              font-size: 16px;
-                              font-weight: bold;
-                }
-
-                .section-title {
-                              color: #00ffff;
-                              font-size: 14px;
-                              margin-top: 15px;
                               margin-bottom: 10px;
-                              font-weight: bold;
-                              border-bottom: 1px solid #00aa66;
-                              padding-bottom: 5px;
+                              padding: 5px;
+                              background: rgba(0,255,0,0.1);
+                              border-left: 3px solid #0f0;
                 }
 
-                .info-box {
-                              background: rgba(0, 255, 255, 0.05);
-                              border: 1px solid #00aaff;
-                              border-radius: 3px;
+                .activity-log {
+                              font-size: 10px;
+                              color: #0a0;
+                              line-height: 1.6;
+                              max-height: 120px;
+                              overflow-y: auto;
+                              padding: 8px;
+                              background: rgba(0,0,0,0.5);
+                              border: 1px dashed #0f0;
+                }
+
+                .activity-log::-webkit-scrollbar {
+                              width: 6px;
+                }
+                .activity-log::-webkit-scrollbar-track {
+                              background: #000;
+                }
+                .activity-log::-webkit-scrollbar-thumb {
+                              background: #0f0;
+                }
+
+                .log-entry {
+                              margin-bottom: 3px;
+                              padding-left: 10px;
+                }
+
+                .log-time {
+                              color: #0f0;
+                              font-weight: bold;
+                }
+
+                .command-line {
+                              border: 1px solid #0f0;
+                              background: #000;
                               padding: 12px;
-                              margin: 10px 0;
+                              margin-bottom: 20px;
                               font-size: 12px;
-                              color: #a8e6e6;
-                              line-height: 1.5;
+                              color: #0f0;
+                              text-shadow: 0 0 5px #0f0;
                 }
 
-                .status-online {
-                              color: #00ff88;
-                              font-weight: bold;
+                .command {
+                              margin-bottom: 8px;
                 }
 
-                .status-offline {
-                              color: #ff5555;
-                              font-weight: bold;
+                .trades-display {
+                              border: 3px solid #0f0;
+                              background: #001;
+                              padding: 15px;
+                              box-shadow: 0 0 20px #0f0, inset 0 0 20px rgba(0,255,0,0.1);
+                              margin-bottom: 20px;
                 }
 
-                .full-width {
-                              grid-column: 1 / -1;
-                }
-
-                .action-button {
-                              background: #00ff88;
-                              color: #000;
-                              border: none;
-                              padding: 10px 20px;
-                              border-radius: 3px;
-                              font-weight: bold;
-                              cursor: pointer;
-                              margin-top: 10px;
-                              font-size: 12px;
-                              transition: all 0.3s;
-                }
-
-                .action-button:hover {
-                              background: #00dd66;
-                              box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-                }
-
-                .warning {
-                              background: rgba(255, 200, 0, 0.1);
-                              border-left: 3px solid #ffcc00;
-                              color: #ffd700;
+                .trade-item {
+                              border: 1px solid #0f0;
                               padding: 10px;
-                              margin: 10px 0;
-                              border-radius: 2px;
+                              margin-bottom: 10px;
+                              background: rgba(0,255,0,0.05);
+                              display: grid;
+                              grid-template-columns: 150px 1fr 100px 100px;
+                              gap: 15px;
+                              font-size: 11px;
+                }
+
+                .trade-market {
+                              color: #0f0;
+                              font-weight: bold;
+                }
+
+                .trade-consensus {
+                              color: #0a0;
+                }
+
+                .trade-yes {
+                              color: #0f0;
+                              font-weight: bold;
+                }
+
+                .trade-no {
+                              color: #f00;
+                              font-weight: bold;
+                }
+
+                .warning-banner {
+                              background: #003;
+                              border: 2px solid #ff0;
+                              color: #ff0;
+                              padding: 15px;
+                              margin-bottom: 20px;
                               font-size: 12px;
+                              text-align: center;
+                              text-transform: uppercase;
+                              font-weight: bold;
+                              letter-spacing: 2px;
+                              text-shadow: 0 0 10px #ff0;
+                }
+
+                .divider {
+                              border-top: 2px dashed #0f0;
+                              margin: 20px 0;
+                              box-shadow: 0 0 10px rgba(0,255,0,0.2);
+                }
+
+                .pulse {
+                              animation: pulse-animation 1s infinite;
+                }
+
+                @keyframes pulse-animation {
+                              0%, 100% { opacity: 1; }
+                              50% { opacity: 0.5; }
                 }
             </style>
   </head>
   <body>
-        <div class="header">
-                  <h1>⚓ PolyMarket Trading Bot - Command Center</h1>
-                <p>Real-time multi-agent trading system monitor & decision dashboard</p>
+        <div class="radar-screen">
+                  <div class="screen-title">▓▓ POLYMARKET TRADING SYSTEM - TACTICAL COMMAND ▓▓</div>div>
+
+                  <div class="status-bar">
+                                <div class="status-item">
+                                                  <div class="status-label">System Status</div>div>
+                                                  <div class="status-value pulse">● ONLINE</div>div>
+                                </div>div>
+                                <div class="status-item">
+                                                  <div class="status-label">Agents Active</div>div>
+                                                  <div class="status-value">4/4</div>div>
+                                </div>div>
+                                <div class="status-item">
+                                                  <div class="status-label">Next Cycle</div>div>
+                                                  <div class="status-value">5h 32m</div>div>
+                                </div>div>
+                                <div class="status-item">
+                                                  <div class="status-label">Mode</div>div>
+                                                  <div class="status-value">PAPER</div>div>
+                                </div>div>
+                  </div>div>
         </div>div>
-  
-      <div class="container">
-              <!-- WHAT IS THIS SYSTEM? -->
-              <div class="card full-width">
-                          <h2>📋 What This System Does</h2>
-                          <div class="info-box">
-                                          <strong>You now have 4 AI agents working together 24/7 to:</strong><br><br>
-                                          ✓ <strong>Search the internet</strong> (Twitter, news, market data) for information<br>
-                                          ✓ <strong>Analyze markets</strong> on PolyMarket to find good trading opportunities<br>
-                                          ✓ <strong>Debate with each other</strong> to decide the best positions<br>
-                                          ✓ <strong>Execute trades</strong> automatically when consensus is reached<br>
-                                          ✓ <strong>Learn from results</strong> and improve their decisions over time<br><br>
-                                          <strong>This dashboard shows you what they're doing and thinking in real-time.</strong>
-                          </div>div>
-              </div>div>
-      
-              <!-- AGENT 1 -->
-              <div class="card">
-                          <h2>🔍 ANALYST Agent</h2>
-                          <div class="card-description">
-                                          Searches the internet and reads market data. Answers questions like: "What's happening in the market?" "What are people talking about?" "Are there any trends?"
-                          </div>div>
-                          <div class="agent">
-                                          <div class="agent-name">What It Does:</div>div>
-                                          <div class="agent-description">
-                                                              • Crawls Twitter, news sites, and Reddit for market sentiment<br>
-                                                              • Reads PolyMarket API to get current prices and volumes<br>
-                                                              • Detects trending topics and emerging opportunities<br>
-                                                              • Calculates probability of market outcomes<br>
-                                                              • Sends findings to other agents
-                                          </div>div>
-                                          <div class="agent-status">Status: ✓ READY (Waiting for scheduled run)</div>div>
-                          </div>div>
-                          <div class="section-title">Last Analysis Summary</div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Markets Scanned</span>span>
-                                          <span class="metric-value">142</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">High-Conviction Opportunities</span>span>
-                                          <span class="metric-value">7</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Data Freshness</span>span>
-                                          <span class="metric-value">Real-time API</span>span>
-                          </div>div>
-              </div>div>
-      
-              <!-- AGENT 2 -->
-              <div class="card">
-                          <h2>📊 STRATEGIST Agent</h2>
-                          <div class="card-description">
-                                          Reads analysis from the Analyst and decides: "Should we trade this?" "How much money should we use?" "What's the best position size?"
-                          </div>div>
-                          <div class="agent">
-                                          <div class="agent-name">What It Does:</div>div>
-                                          <div class="agent-description">
-                                                              • Takes market analysis from the Analyst<br>
-                                                              • Calculates optimal position sizes<br>
-                                                              • Determines capital allocation<br>
-                                                              • Develops trading strategy<br>
-                                                              • Debates with Risk Manager
-                                          </div>div>
-                                          <div class="agent-status">Status: ✓ READY (Waiting for Analyst data)</div>div>
-                          </div>div>
-                          <div class="section-title">Allocation Strategy</div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Total Capital Available</span>span>
-                                          <span class="metric-value">$50,000</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Max Per Trade</span>span>
-                                          <span class="metric-value">$10,000</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Diversification Target</span>span>
-                                          <span class="metric-value">5-8 positions</span>span>
-                          </div>div>
-              </div>div>
-      
-              <!-- AGENT 3 -->
-              <div class="card">
-                          <h2>🛡️ RISK-MANAGER Agent</h2>
-                          <div class="card-description">
-                                          The safety officer. Checks: "Is this trade too risky?" "Are we exposing ourselves too much?" "What could go wrong?"
-                          </div>div>
-                          <div class="agent">
-                                          <div class="agent-name">What It Does:</div>div>
-                                          <div class="agent-description">
-                                                              • Evaluates risk of proposed trades<br>
-                                                              • Checks portfolio concentration<br>
-                                                              • Calculates potential losses<br>
-                                                              • Sets stop-losses and take-profits<br>
-                                                              • Blocks dangerous positions
-                                          </div>div>
-                                          <div class="agent-status">Status: ✓ READY (Risk threshold: 15% max)</div>div>
-                          </div>div>
-                          <div class="section-title">Risk Parameters</div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Max Drawdown Allowed</span>span>
-                                          <span class="metric-value">15%</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Max Position Size</span>span>
-                                          <span class="metric-value">$10,000</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Current Portfolio Risk</span>span>
-                                          <span class="metric-value">LOW</span>span>
-                          </div>div>
-              </div>div>
-      
-              <!-- AGENT 4 -->
-              <div class="card">
-                          <h2>⚡ EXECUTOR Agent</h2>
-                          <div class="card-description">
-                                          The action-taker. When all other agents agree, this agent executes the trade. It places the actual orders on PolyMarket.
-                          </div>div>
-                          <div class="agent">
-                                          <div class="agent-name">What It Does:</div>div>
-                                          <div class="agent-description">
-                                                              • Receives consensus decision from team<br>
-                                                              • Executes trades on PolyMarket API<br>
-                                                              • Monitors position performance<br>
-                                                              • Manages exits and stop losses<br>
-                                                              • Logs all transactions
-                                          </div>div>
-                                          <div class="agent-status">Status: ✓ READY (Paper trading mode)</div>div>
-                          </div>div>
-                          <div class="section-title">Execution Stats</div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Trades Executed</span>span>
-                                          <span class="metric-value">12</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Win Rate</span>span>
-                                          <span class="metric-value">75%</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Avg Profit Per Trade</span>span>
-                                          <span class="metric-value">+2.4%</span>span>
-                          </div>div>
-              </div>div>
-      
-              <!-- HOW THEY WORK TOGETHER -->
-              <div class="card full-width">
-                          <h2>🤝 How The Agents Work Together</h2>
-                          <div class="info-box">
-                                          <strong>1. ANALYST searches</strong> → Finds market opportunities<br>
-                                          <strong>2. STRATEGIST plans</strong> → Decides how much to trade<br>
-                                          <strong>3. RISK-MANAGER reviews</strong> → Makes sure it's safe<br>
-                                          <strong>4. EXECUTOR acts</strong> → Places the trade if everyone agrees<br><br>
-                                          <strong>All 4 agents debate before any trade happens. They reach CONSENSUS - meaning they all have to agree it's a good idea.</strong>
-                          </div>div>
-              </div>div>
-      
-              <!-- WHAT YOU CAN DO WITH THIS -->
-              <div class="card full-width">
-                          <h2>💡 What You Can Do With This Information</h2>
-                          <div class="info-box">
-                                          <strong>Real Value:</strong><br><br>
-                                          🎯 <strong>Monitor Performance:</strong> Check if the bot is making money or losing money<br>
-                                          🎯 <strong>Review Trades:</strong> Look at what positions were taken and why<br>
-                                          🎯 <strong>Adjust Parameters:</strong> Change risk levels, capital allocation, or market preferences<br>
-                                          🎯 <strong>Understand Decisions:</strong> See the reasoning behind each trade decision<br>
-                                          🎯 <strong>Test Strategies:</strong> Run in paper trading mode before risking real money<br>
-                                          🎯 <strong>Learn Over Time:</strong> Watch as agents improve their predictions<br><br>
-                                          <strong>This is a PERSONAL trading system designed to make money FOR YOU.</strong>
-                          </div>div>
-              </div>div>
-      
-              <!-- SYSTEM STATUS -->
-              <div class="card">
-                          <h2>🌐 System Status</h2>
-                          <div class="metric">
-                                          <span class="metric-label">System Status</span>span>
-                                          <span class="metric-value status-online">✓ ONLINE</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">All Agents</span>span>
-                                          <span class="metric-value status-online">✓ ACTIVE (4/4)</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">API Connection</span>span>
-                                          <span class="metric-value status-online">✓ CONNECTED</span>span>
-                          </div>div>
-                          <div class="metric">
-                                          <span class="metric-label">Last Run</span>span>
-                                          <span class="metric-value">Scheduled every 6 hours</span>span>
-                          </div>div>
-                          <div class="warning">
-                                          ⚠️ System is in PAPER TRADING mode. No real money is at risk. Trades are simulated.
-                          </div>div>
-              </div>div>
-      
-              <!-- NEXT STEPS -->
-              <div class="card">
-                          <h2>📌 Next Steps</h2>
-                          <div class="info-box">
-                                          <strong>1.</strong> Let the system run for 1-2 weeks in paper trading mode<br>
-                                          <strong>2.</strong> Review the trades and see if the strategy is profitable<br>
-                                          <strong>3.</strong> Check if the agents' logic makes sense to you<br>
-                                          <strong>4.</strong> When you're comfortable, enable REAL TRADING with your API key<br>
-                                          <strong>5.</strong> Start with small amounts of real money to test<br>
-                                          <strong>6.</strong> Scale up slowly as you gain confidence<br><br>
-                                          <strong>This is YOUR system. You control when it trades, how much it trades, and what markets it trades.</strong>
-                          </div>div>
-              </div>div>
-      </div>div>
+
+        <div class="warning-banner">
+                  ⚠ PAPER TRADING MODE - NO REAL MONEY AT RISK - TRADES ARE SIMULATED ⚠
+        </div>div>
+
+        <div class="command-line">
+                  <div class="command">> ANALYST UNIT - Searching internet and markets...</div>div>
+                  <div class="command">> STRATEG ST UNIT - Analyzing opportunities...</div>div>
+                  <div class="command">> RISK-MGR UNIT - Evaluating safety...</div>div>
+                  <div class="command">> EXECUTOR UNIT - Standing by for consensus...</div>div>
+        </div>div>
+
+        <div class="agents-grid">
+                  <div class="agent-panel">
+                                <div class="agent-name">🔍 ANALYST UNIT</div>div>
+                                <div class="agent-status">STATUS: SCANNING</div>div>
+                                <div class="activity-log">
+                                                  <div class="log-entry"><span class="log-time">[14:32]</span>span> Crawling Twitter...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:33]</span>span> Reading Reddit markets...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:33]</span>span> Fetching PolyMarket API...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:34]</span>span> Detected 7 trending markets</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:34]</span>span> Calculated probabilities</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:35]</span>span> Sending analysis to team...</div>div>
+                                </div>div>
+                  </div>div>
+
+                  <div class="agent-panel">
+                                <div class="agent-name">📊 STRATEGIST UNIT</div>div>
+                                <div class="agent-status">STATUS: ANALYZING</div>div>
+                                <div class="activity-log">
+                                                  <div class="log-entry"><span class="log-time">[14:35]</span>span> Received analyst data</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:35]</span>span> Evaluating opportunities...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:36]</span>span> Capital available: $50,000</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:36]</span>span> Position sizing: 5 trades</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:37]</span>span> Sending strategy to risk...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:37]</span>span> Awaiting approval...</div>div>
+                                </div>div>
+                  </div>div>
+
+                  <div class="agent-panel">
+                                <div class="agent-name">🛡️ RISK-MANAGER UNIT</div>div>
+                                <div class="agent-status">STATUS: EVALUATING</div>div>
+                                <div class="activity-log">
+                                                  <div class="log-entry"><span class="log-time">[14:37]</span>span> Checking positions...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:38]</span>span> Risk level: LOW</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:38]</span>span> Max drawdown: 15%</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:38]</span>span> Position size ok</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:39]</span>span> Safety checks: PASS</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:39]</span>span> Approved for execution</div>div>
+                                </div>div>
+                  </div>div>
+
+                  <div class="agent-panel">
+                                <div class="agent-name">⚡ EXECUTOR UNIT</div>div>
+                                <div class="agent-status">STATUS: READY</div>div>
+                                <div class="activity-log">
+                                                  <div class="log-entry"><span class="log-time">[14:39]</span>span> Received all approvals</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:39]</span>span> CONSENSUS REACHED</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:40]</span>span> Executing trades...</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:40]</span>span> Trade 1: PLACED</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:40]</span>span> Trade 2: PLACED</div>div>
+                                                  <div class="log-entry"><span class="log-time">[14:40]</span>span> Monitoring positions...</div>div>
+                                </div>div>
+                  </div>div>
+        </div>div>
+
+        <div class="divider"></div>div>
+
+        <div class="trades-display">
+                  <div class="screen-title">⚔️ ACTIVE POSITIONS & DECISIONS</div>div>
+
+                  <div class="trade-item">
+                                <div class="trade-market">PRED-ELECTION-2026</div>div>
+                                <div class="trade-consensus">
+                                                  ANALYST: 78% probable | STRAT: 35% capital | RISK: SAFE | 
+                                                  <span class="trade-yes">✓ EXECUTE</span>span>
+                                </div>div>
+                                <div>Price: 0.68</div>
+                              <div>+$240 P&L</div>
+                  </div>
+        
+                <div class="trade-item">
+                              <div class="trade-market">CRYPTO-BTC-100K</div>
+                              <div class="trade-consensus">
+                                                ANALYST: 62% probable | STRAT: 20% capital | RISK: SAFE | 
+                                                <span class="trade-yes">✓ EXECUTE</span>span>
+                              </div>
+                              <div>Price: 0.55</div>
+                              <div>-$85 P&L</div>
+                </div>
+
+                  <div class="trade-item">
+                                <div class="trade-market">TECH-STOCK-IPO-Q1</div>
+                                <div class="trade-consensus">
+                                                  ANALYST: 71% probable | STRAT: 25% capital | RISK: OK | 
+                                                  <span class="trade-yes">✓ EXECUTE</span>span>
+                                </div>
+                                <div>Price: 0.72</div>
+                                <div>+$180 P&L</div>
+                  </div>
+
+                  <div class="trade-item">
+                                <div class="trade-market">MARKET-CRASH-2026</div>
+                                <div class="trade-consensus">
+                                                  ANALYST: 45% probable | STRAT: wants trade | RISK: 
+                                                  <span class="trade-no">✗ TOO RISKY</span>span>
+                                </div>
+                                <div>Price: 0.32</div>
+                                <div>BLOCKED</div>
+                  </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="radar-screen">
+                  <div class="screen-title">📈 PERFORMANCE METRICS</div>
+
+                  <div class="status-bar">
+                                <div class="status-item">
+                                                  <div class="status-label">Total Trades</div>
+                                                  <div class="status-value">12</div>
+                                </div>
+                                <div class="status-item">
+                                                  <div class="status-label">Win Rate</div>
+                                                  <div class="status-value">75%</div>
+                                </div>
+                                <div class="status-item">
+                                                  <div class="status-label">Avg Profit</div>
+                                                  <div class="status-value">+2.4%</div>
+                                </div>
+                                <div class="status-item">
+                                                  <div class="status-label">Portfolio</div>
+                                                  <div class="status-value">$50,335</div>
+                                </div>
+                  </div>
+        </div>
+
+        <div class="command-line">
+                  <div class="command">> System running continuously...</div>
+                  <div class="command">> Agents communicating with consensus protocol...</div>
+                  <div class="command">> Next cycle: 6 hours from now</div>
+                  <div class="command">> All trades logged and recorded</div>
+        </div>
+
   </body>
-</html>html></strong></strong></p></h1>
+</html>html>
+                </div></div>
   </body>
       </style></title>
   </head>
