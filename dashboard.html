@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PolyMarket Trading Bot - Tactical Command Center</title>
+      <style>
+                * {
+                              margin: 0;
+                              padding: 0;
+                              box-sizing: border-box;
+                }
+
+                body {
+                              font-family: 'Courier New', monospace;
+                              background: linear-gradient(135deg, #0a1628 0%, #0f2847 50%, #0d1f3c 100%);
+                              color: #00ff88;
+                              overflow: hidden;
+                              height: 100vh;
+                }
+
+                .container {
+                              display: grid;
+                              grid-template-columns: 1fr 2fr 1fr;
+                              gap: 1rem;
+                              padding: 1.5rem;
+                              height: 100vh;
+                              overflow: hidden;
+                }
+
+                .panel {
+                              background: rgba(10, 25, 47, 0.9);
+                              border: 2px solid #00ff88;
+                              border-radius: 4px;
+                              padding: 1.5rem;
+                              display: flex;
+                              flex-direction: column;
+                              box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+                              overflow-y: auto;
+                }
+
+                .panel::-webkit-scrollbar {
+                              width: 8px;
+                }
+
+                .panel::-webkit-scrollbar-track {
+                              background: rgba(0, 255, 136, 0.1);
+                }
+
+                .panel::-webkit-scrollbar-thumb {
+                              background: #00ff88;
+                              border-radius: 4px;
+                }
+
+                .panel-title {
+                              font-size: 1.2rem;
+                              font-weight: bold;
+                              margin-bottom: 1rem;
+                              text-transform: uppercase;
+                              letter-spacing: 2px;
+                              color: #00ff88;
+                              border-bottom: 2px solid #00ff88;
+                              padding-bottom: 0.5rem;
+                              text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+                }
+
+                .agent-card {
+                              background: rgba(15, 40, 71, 0.8);
+                              border: 1px solid #00aa66;
+                              border-radius: 3px;
+                              padding: 1rem;
+                              margin-bottom: 1rem;
+                              font-size: 0.85rem;
+                }
+
+                .agent-status {
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              margin-bottom: 0.5rem;
+                }
+
+                .agent-name {
+                              font-weight: bold;
+                              color: #00ffff;
+                              text-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+                }
+
+                .status-indicator {
+                              display: inline-block;
+                              width: 8px;
+                              height: 8px;
+                              border-radius: 50%;
+                              background: #00ff88;
+                              animation: pulse 1.5s infinite;
+                              margin-right: 0.5rem;
+                }
+
+                @keyframes pulse {
+                              0%, 100% { opacity: 1; }
+                              50% { opacity: 0.5; }
+                }
+
+                .message-log {
+                              flex: 1;
+                              overflow-y: auto;
+                              margin-top: 1rem;
+                              padding-top: 1rem;
+                              border-top: 1px solid #00aa66;
+                }
+
+                .message {
+                              font-size: 0.75rem;
+                              margin-bottom: 0.5rem;
+                              padding: 0.5rem;
+                              background: rgba(0, 255, 136, 0.05);
+                              border-left: 2px solid #00aa66;
+                              padding-left: 0.75rem;
+                              line-height: 1.4;
+                }
+
+                .message-time {
+                              color: #00aa88;
+                              font-weight: bold;
+                }
+
+                .message-agent {
+                              color: #00ffff;
+                }
+
+                .central-panel {
+                              grid-column: 2;
+                              display: flex;
+                              flex-direction: column;
+                }
+
+                .market-data {
+                              flex: 1;
+                              overflow-y: auto;
+                }
+
+                .market-item {
+                              background: rgba(15, 40, 71, 0.8);
+                              border: 1px solid #00aa66;
+                              border-radius: 3px;
+                              padding: 1rem;
+                              margin-bottom: 1rem;
+                              font-size: 0.9rem;
+                }
+
+                .market-header {
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              margin-bottom: 0.5rem;
+                              color: #00ffff;
+                }
+
+                .market-title {
+                              font-weight: bold;
+                              flex: 1;
+                }
+
+                .market-price {
+                              color: #00ff88;
+                              font-weight: bold;
+                              font-size: 1.1rem;
+                }
+
+                .market-info {
+                              display: flex;
+                              justify-content: space-between;
+                              font-size: 0.8rem;
+                              color: #00aa88;
+                              margin-top: 0.5rem;
+                }
+
+                .network-monitor {
+                              margin-top: 1rem;
+                              padding-top: 1rem;
+                              border-top: 2px solid #00ff88;
+                }
+
+                .stat-row {
+                              display: flex;
+                              justify-content: space-between;
+                              margin-bottom: 0.5rem;
+                              font-size: 0.85rem;
+                }
+
+                .stat-label {
+                              color: #00aa88;
+                }
+
+                .stat-value {
+                              color: #00ff88;
+                              font-weight: bold;
+                }
+
+                .header {
+                              grid-column: 1 / -1;
+                              background: rgba(10, 25, 47, 0.95);
+                              border: 2px solid #00ff88;
+                              border-radius: 4px;
+                              padding: 1.5rem;
+                              display: flex;
+                              justify-content: space-between;
+                              align-items: center;
+                              margin-bottom: 1rem;
+                              box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+                }
+
+                .header-title {
+                              font-size: 1.8rem;
+                              font-weight: bold;
+                              text-transform: uppercase;
+                              letter-spacing: 3px;
+                              color: #00ffff;
+                              text-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+                }
+
+                .header-status {
+                              display: flex;
+                              gap: 2rem;
+                              font-size: 0.9rem;
+                }
+
+                .status-item {
+                              display: flex;
+                              align-items: center;
+                              gap: 0.5rem;
+                }
+
+                .status-light {
+                              display: inline-block;
+                              width: 10px;
+                              height: 10px;
+                              border-radius: 50%;
+                              background: #00ff88;
+                              box-shadow: 0 0 8px #00ff88;
+                }
+
+                .emotion-meter {
+                              margin-top: 1rem;
+                              display: grid;
+                              grid-template-columns: repeat(3, 1fr);
+                              gap: 1rem;
+                }
+
+                .emotion-bar {
+                              background: rgba(15, 40, 71, 0.8);
+                              border: 1px solid #00aa66;
+                              border-radius: 3px;
+                              padding: 0.8rem;
+                              font-size: 0.8rem;
+                }
+
+                .emotion-label {
+                              color: #00aa88;
+                              margin-bottom: 0.3rem;
+                              font-weight: bold;
+                }
+
+                .emotion-value {
+                              color: #00ff88;
+                              font-size: 1.1rem;
+                              font-weight: bold;
+                }
+
+                .debate-section {
+                              margin-top: 1.5rem;
+                              padding-top: 1.5rem;
+                              border-top: 2px solid #00ff88;
+                }
+
+                .debate-entry {
+                              background: rgba(15, 40, 71, 0.7);
+                              border-left: 3px solid #00ffff;
+                              padding: 0.8rem;
+                              margin-bottom: 0.8rem;
+                              font-size: 0.8rem;
+                              line-height: 1.5;
+                }
+
+                .debate-agent {
+                              color: #00ffff;
+                              font-weight: bold;
+                }
+
+                .debate-text {
+                              color: #00ff88;
+                              margin-top: 0.3rem;
+                }
+
+                .decision-panel {
+                              background: rgba(0, 255, 136, 0.1);
+                              border: 2px solid #00ff88;
+                              border-radius: 3px;
+                              padding: 1rem;
+                              margin-top: 1rem;
+                              text-align: center;
+                }
+
+                .decision-title {
+                              color: #00ffff;
+                              font-weight: bold;
+                              margin-bottom: 0.5rem;
+                              text-transform: uppercase;
+                }
+
+                .decision-value {
+                              color: #00ff88;
+                              font-size: 1.3rem;
+                              font-weight: bold;
+                }
+            </style>
+  </head>
+  <body>
+        <div class="header">
+                  <div class="header-title">⚓ TACTICAL COMMAND CENTER ⚓</div>div>
+                  <div class="header-status">
+                                <div class="status-item">
+                                                  <div class="status-light"></div>div>
+                                                  System: ONLINE
+                                </div>div>
+                                <div class="status-item">
+                                                  <div class="status-light"></div>div>
+                                                  Agents: 4/4 ACTIVE
+                                </div>div>
+                                <div class="status-item">
+                                                  <div class="status-light"></div>div>
+                                                  Markets: MONITORING
+                                </div>div>
+                  </div>div>
+        </div>div>
+
+        <div class="container">
+                  <!-- LEFT PANEL: Agent Status -->
+                  <div class="panel">
+                                <div class="panel-title">🤖 AGENTS</div>div>
+
+                                <div class="agent-card">
+                                                  <div class="agent-status">
+                                                                        <span class="agent-name"><span class="status-indicator"></span>span>ANALYST</span>span>
+                                                                        <span>Active</span>
+                                                  </div>div>
+                                                <div class="message-log">
+                                                                    <div class="message">
+                                                                                            <span class="message-time">[14:32:15]</span><br>
+                                                                                            <span class="message-agent">ANALYST:</span> Detected 3 high-volatility markets. Probability curve suggests upward trend for PRED-ELECTION-2026.
+                                                                    </div>div>
+                                                </div>div>
+                                </div>div>
+                  
+                              <div class="agent-card">
+                                              <div class="agent-status">
+                                                                  <span class="agent-name"><span class="status-indicator"></span>STRATEGIST</span>
+                                                                  <span>Active</span>
+                                              </div>div>
+                                              <div class="message-log">
+                                                                  <div class="message">
+                                                                                          <span class="message-time">[14:31:45]</span><br>
+                                                                                          <span class="message-agent">STRATEGIST:</span> Risk assessment: Recommend 40% allocation to high-confidence plays.
+                                                                  </div>div>
+                                              </div>div>
+                              </div>div>
+                  
+                              <div class="agent-card">
+                                              <div class="agent-status">
+                                                                  <span class="agent-name"><span class="status-indicator"></span>RISK-MGR</span>
+                                                                  <span>Active</span>
+                                              </div>div>
+                                              <div class="message-log">
+                                                                  <div class="message">
+                                                                                          <span class="message-time">[14:31:20]</span><br>
+                                                                                          <span class="message-agent">RISK-MGR:</span> Portfolio stress test passed. Max drawdown threshold: 15%
+                                                                  </div>div>
+                                              </div>div>
+                              </div>div>
+                  
+                              <div class="agent-card">
+                                              <div class="agent-status">
+                                                                  <span class="agent-name"><span class="status-indicator"></span>EXECUTOR</span>
+                                                                  <span>Active</span>
+                                              </div>div>
+                                              <div class="message-log">
+                                                                  <div class="message">
+                                                                                          <span class="message-time">[14:30:50]</span><br>
+                                                                                          <span class="message-agent">EXECUTOR:</span> Ready to execute optimal positions once consensus reached.
+                                                                  </div>div>
+                                              </div>div>
+                              </div>div>
+                  </div>div>
+        
+                <!-- CENTER PANEL: Market Data & Debate -->
+                <div class="central-panel">
+                            <div class="panel">
+                                            <div class="panel-title">📊 MARKET INTELLIGENCE</div>div>
+                                            
+                                            <div class="market-data">
+                                                                <div class="market-item">
+                                                                                        <div class="market-header">
+                                                                                                                    <span class="market-title">PRED-ELECTION-2026</span>
+                                                                                                                    <span class="market-price">0.68</span>
+                                                                                          </div>div>
+                                                                                        <div class="market-info">
+                                                                                                                    <span>Vol: $2.4M</span>
+                                                                                                                    <span>Sentiment: BULLISH</span>
+                                                                                                                    <span>Confidence: 78%</span>
+                                                                                          </div>div>
+                                                                </div>div>
+                                            
+                                                                <div class="market-item">
+                                                                                        <div class="market-header">
+                                                                                                                    <span class="market-title">CRYPTO-BTC-ABOVE-100K</span>
+                                                                                                                    <span class="market-price">0.55</span>
+                                                                                          </div>div>
+                                                                                        <div class="market-info">
+                                                                                                                    <span>Vol: $1.8M</span>
+                                                                                                                    <span>Sentiment: NEUTRAL</span>
+                                                                                                                    <span>Confidence: 62%</span>
+                                                                                          </div>div>
+                                                                </div>div>
+                                            
+                                                                <div class="market-item">
+                                                                                        <div class="market-header">
+                                                                                                                    <span class="market-title">TECH-STOCK-IPO-Q1-2026</span>
+                                                                                                                    <span class="market-price">0.72</span>
+                                                                                          </div>div>
+                                                                                        <div class="market-info">
+                                                                                                                    <span>Vol: $1.2M</span>
+                                                                                                                    <span>Sentiment: BULLISH</span>
+                                                                                                                    <span>Confidence: 71%</span>
+                                                                                          </div>div>
+                                                                </div>div>
+                                            </div>div>
+                            
+                                            <div class="debate-section">
+                                                                <div class="panel-title">💬 AGENT CONSENSUS DEBATE</div>div>
+                                                                
+                                                                <div class="debate-entry">
+                                                                                        <span class="debate-agent">ANALYST:</span>
+                                                                                        <div class="debate-text">"Strong technical signals favor PRED-ELECTION-2026. Historical precedent shows similar patterns predict 76% accuracy."</div>div>
+                                                                </div>div>
+                                            
+                                                                <div class="debate-entry">
+                                                                                        <span class="debate-agent">STRATEGIST:</span>
+                                                                                        <div class="debate-text">"Agreed. Combining sentiment analysis with market depth, we should allocate 35% of capital here. Diversify remaining 65% across other high-conviction plays."</div>div>
+                                                                </div>div>
+                                            
+                                                                <div class="debate-entry">
+                                                                                        <span class="debate-agent">RISK-MGR:</span>
+                                                                                        <div class="debate-text">"Acceptable. Current volatility metrics support this position. Recommend trailing stop-loss at 60% if thesis breaks."</div>div>
+                                                                </div>div>
+                                            
+                                                                <div class="debate-entry">
+                                                                                        <span class="debate-agent">EXECUTOR:</span>
+                                                                                        <div class="debate-text">"Consensus achieved. Initiating position: 35% capital → PRED-ELECTION-2026. Monitoring in real-time..."</div>div>
+                                                                </div>div>
+                                            
+                                                                <div class="decision-panel">
+                                                                                        <div class="decision-title">🎯 CONSENSUS DECISION</div>div>
+                                                                                        <div class="decision-value">EXECUTE TRADE ✓</div>div>
+                                                                </div>div>
+                                            </div>div>
+                            </div>div>
+                </div>div>
+        
+                <!-- RIGHT PANEL: Metrics & Performance -->
+                <div class="panel">
+                            <div class="panel-title">📈 PERFORMANCE METRICS</div>div>
+                            
+                            <div class="stat-row">
+                                            <span class="stat-label">Total Value</span>
+                                            <span class="stat-value">$125,430</span>
+                            </div>div>
+                            <div class="stat-row">
+                                            <span class="stat-label">Daily P&L</span>
+                                            <span class="stat-value">+$3,240</span>
+                            </div>div>
+                            <div class="stat-row">
+                                            <span class="stat-label">Win Rate</span>
+                                            <span class="stat-value">72%</span>
+                            </div>div>
+                            <div class="stat-row">
+                                            <span class="stat-label">Sharpe Ratio</span>
+                                            <span class="stat-value">1.85</span>
+                            </div>div>
+                
+                            <div class="emotion-meter">
+                                            <div class="emotion-bar">
+                                                                <div class="emotion-label">Confidence</div>div>
+                                                                <div class="emotion-value">78%</div>div>
+                                            </div>div>
+                                            <div class="emotion-bar">
+                                                                <div class="emotion-label">Caution</div>div>
+                                                                <div class="emotion-value">35%</div>div>
+                                            </div>div>
+                                            <div class="emotion-bar">
+                                                                <div class="emotion-label">Consensus</div>div>
+                                                                <div class="emotion-value">92%</div>div>
+                                            </div>div>
+                            </div>div>
+                
+                            <div class="network-monitor">
+                                            <div class="panel-title">🌐 NETWORK STATUS</div>div>
+                                            
+                                            <div class="stat-row">
+                                                                <span class="stat-label">API Status</span>
+                                                                <span class="stat-value">✓ GREEN</span>
+                                            </div>div>
+                                            <div class="stat-row">
+                                                                <span class="stat-label">Data Latency</span>
+                                                                <span class="stat-value">45ms</span>
+                                            </div>div>
+                                            <div class="stat-row">
+                                                                <span class="stat-label">Agent Sync</span>
+                                                                <span class="stat-value">✓ 100%</span>
+                                            </div>div>
+                                            <div class="stat-row">
+                                                                <span class="stat-label">Next Run</span>
+                                                                <span class="stat-value">5h 28m</span>
+                                            </div>div>
+                            </div>div>
+                </div>div>
+        </div>div>
+  
+      <script>
+                // Simulate live updates
+                setInterval(() => {
+                              const messages = document.querySelectorAll('.message');
+                              if (messages.length > 0) {
+                                                const lastMessage = messages[messages.length - 1];
+                                                // In real implementation, this would fetch from your API
+                              }
+                }, 5000);
+
+                // Auto-refresh dashboard every 30 seconds
+                // setInterval(() => location.reload(), 30000);
+      </script>
+  </body>
+</html>html>
+      </script></span></span>
+  </body>
+      </style></title>
+  </head>
