@@ -1,35 +1,35 @@
 name: PolyMarket Agent Swarm
 on:
-  schedule:
-      - cron: '0 */6 * * *'
-        workflow_dispatch:
-        jobs:
-          trading_bot:
-              runs-on: ubuntu-latest
-    timeout-minutes: 30
-                      steps:
-                            - name: Checkout code
-                                    uses: actions/checkout@v3
-                                          - name: Set up Python
-                                                  uses: actions/setup-python@v4
-                                                          with:
-                                                                    python-version: '3.11'
-                                                                          - name: Install dependencies
-                                                                                  run: |
-                                                                                            python -m pip install --upgrade pip
-                                                                                                      pip install -r requirements.txt
-                                                                                                            - name: Run Trading Bot Swarm
-                                                                                                                    env:
-                                                                                                                              ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-                                                                                                                                        POLYMARKET_PRIVATE_KEY: ${{ secrets.POLYMARKET_PRIVATE_KEY }}
-                                                                                                                                                  TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+    schedule:
+            - cron: '0 */6 * * *'
+                workflow_dispatch:
+                jobs:
+                    trading_bot:
+                            runs-on: ubuntu-latest
+                                    timeout-minutes: 30
+                                            steps:
+                                                        - name: Checkout code
+                                                                      uses: actions/checkout@v3
+                                                                                  - name: Set up Python
+                                                                                                uses: actions/setup-python@v4
+                                                                                                              with:
+                                                                                                                                python-version: '3.11'
+                                                                                                                                            - name: Install dependencies
                                                                                                                                                           run: |
-                                                                                                                                                                    python -m agents.core.swarm_orchestrator
-                                                                                                                                                                          - name: Upload logs
-                                                                                                                                                                                  if: always()
-                                                                                                                                                                                          uses: actions/upload-artifact@v3
-                                                                                                                                                                                                  with:
-                                                                                                                                                                                                            name: bot-logs
-                                                                                                                                                                                                                      path: logs/
-                                                                                                                                                                                                                                retention-days: 7
-                                                                                                                                                                                                                                
+                                                                                                                                                                            python -m pip install --upgrade pip
+                                                                                                                                                                                              pip install -r requirements.txt
+                                                                                                                                                                                                          - name: Run Trading Bot Swarm
+                                                                                                                                                                                                                        env:
+                                                                                                                                                                                                                                          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+                                                                                                                                                                                                                                                            POLYMARKET_PRIVATE_KEY: ${{ secrets.POLYMARKET_PRIVATE_KEY }}
+                                                                                                                                                                                                                                                                              TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+                                                                                                                                                                                                                                                                                            run: |
+                                                                                                                                                                                                                                                                                                              python -m agents.core.swarm_orchestrator
+                                                                                                                                                                                                                                                                                                                          - name: Upload logs
+                                                                                                                                                                                                                                                                                                                                        if: always()
+                                                                                                                                                                                                                                                                                                                                                      uses: actions/upload-artifact@v3
+                                                                                                                                                                                                                                                                                                                                                                    with:
+                                                                                                                                                                                                                                                                                                                                                                                      name: bot-logs
+                                                                                                                                                                                                                                                                                                                                                                                                        path: logs/
+                                                                                                                                                                                                                                                                                                                                                                                                                          retention-days: 7
+                                                                                                                                                                                                                                                                                                                                                                                                                          
