@@ -32,3 +32,4 @@ on:
                                                                                                                                                                                                             name: bot-logs
                                                                                                                                                                                                                       path: logs/
                                                                                                                                                                                                                                 retention-days: 7
+                                                                                                                                                                                                                                
