@@ -6,8 +6,8 @@ on:
         jobs:
           trading_bot:
               runs-on: ubuntu-latest
-    timeout-minutes: 30
-    steps:
+                  timeout-minutes: 30
+                      steps:
                             - name: Checkout code
                                     uses: actions/checkout@v3
                                           - name: Set up Python
@@ -32,3 +32,4 @@ on:
                                                                                                                                                                                                             name: bot-logs
                                                                                                                                                                                                                       path: logs/
                                                                                                                                                                                                                                 retention-days: 7
+                                                                                                                                                                                                                                
